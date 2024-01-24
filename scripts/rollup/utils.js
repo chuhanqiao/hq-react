@@ -19,13 +19,12 @@ export function getPackageJson(pkgName) {
 	return JSON.parse(str)
 }
 //  获取公用的plugins
-export function getBaseRollupPlugins(
-	{
-		alias = {
-			__DEV__: true
-		}
+export function getBaseRollupPlugins({
+	alias = {
+		__DEV__: true,
+		preventAssignment: true
 	},
-	{ typescript = {} } = {}
-) {
-	return [cjs(), ts(typescript)]
+	typescript = {}
+} = {}) {
+	return [replace(alias), cjs(), ts(typescript)]
 }
