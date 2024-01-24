@@ -5,10 +5,12 @@ export type Props = any
 export type ElementType = any
 
 export interface ReactElementType {
-	$$typeof: ElementType;
-  type:Type;
-	key: Key;
-	ref: Ref;
-	props: Props;
-	__mark: string;
+	$$typeof: ElementType
+	type: Type
+	key: Key
+	ref: Ref
+	props: Props
+	__mark: string
 }
+
+export type Action<State> = State | ((prevState: State) => State)

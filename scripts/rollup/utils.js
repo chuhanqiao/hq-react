@@ -2,6 +2,7 @@ import path from 'path'
 import fs from 'fs'
 import ts from 'rollup-plugin-typescript2'
 import cjs from '@rollup/plugin-commonjs'
+import replace from '@rollup/plugin-replace'
 
 const pkgPath = path.resolve(__dirname, '../../packages')
 //  指定打包产物的路径
@@ -18,6 +19,13 @@ export function getPackageJson(pkgName) {
 	return JSON.parse(str)
 }
 //  获取公用的plugins
-export function getBaseRollupPlugins({ typescript = {} } = {}) {
+export function getBaseRollupPlugins(
+	{
+		alias = {
+			__DEV__: true
+		}
+	},
+	{ typescript = {} } = {}
+) {
 	return [cjs(), ts(typescript)]
 }
