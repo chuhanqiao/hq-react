@@ -43,7 +43,7 @@ function commitPlacement(finishedWork: FiberNode) {
 	// 找到parent
 	let hostParent = getHostParent(finishedWork)
 	// 当前dom插入到parent
-	if(hostParent !== null){
+	if (hostParent !== null) {
 		appendPlacementNodeIntoContainer(finishedWork, hostParent)
 	}
 }
@@ -71,7 +71,7 @@ function appendPlacementNodeIntoContainer(
 	hostParent: Container
 ) {
 	if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
-		appendChildToContainer(finishedWork.stateNode, hostParent)
+		appendChildToContainer(hostParent, finishedWork.stateNode)
 		return
 	}
 	const child = finishedWork.child

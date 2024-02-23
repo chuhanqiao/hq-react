@@ -1,6 +1,11 @@
-import { createInstance, appendInitialChild, createTextInstance, Container } from 'hostConfig'
+import {
+	createInstance,
+	appendInitialChild,
+	createTextInstance,
+	Container
+} from 'hostConfig'
 import { FiberNode } from './fiber'
-import { HostComponent, HostRoot, HostText } from './worTags'
+import { FunctionComponent, HostComponent, HostRoot, HostText } from './worTags'
 import { NoFlags } from './fiberFlags'
 
 export const completeWork = (wip: FiberNode) => {
@@ -15,24 +20,27 @@ export const completeWork = (wip: FiberNode) => {
 				// 1 创建dom节点
 				const instance = createInstance(wip.type, newProps)
 				// 2 将dom节点插入到dom树中
-        appendAllChildren(instance,wip)
-        wip.stateNode = instance
+				appendAllChildren(instance, wip)
+				wip.stateNode = instance
 			}
-      bubbleProperties(wip)
+			bubbleProperties(wip)
 			return null
 		case HostText:
-      // 判断是否首屏渲染
+			// 判断是否首屏渲染
 			if (current !== null && wip.stateNode) {
 				// update
 			} else {
 				// 1 创建dom节点
 				const instance = createTextInstance(newProps.content)
-        wip.stateNode = instance
+				wip.stateNode = instance
 			}
-      bubbleProperties(wip)
+			bubbleProperties(wip)
 			return null
 		case HostRoot:
-      bubbleProperties(wip)
+			bubbleProperties(wip)
+			return null
+		case FunctionComponent:
+			bubbleProperties(wip)
 			return null
 		default:
 			if (__DEV__) {
@@ -50,31 +58,31 @@ function appendAllChildren(parent: Container, wip: FiberNode) {
 		} else if (node.child !== null) {
 			node.child.return = node
 			node = node.child
-      continue
+			continue
 		}
-    if(node === wip){
-      return
-    }
-    while(node.sibling === null){
-      if(node.return === null || node.return === wip){
-        return
-      }
-      node = node?.return
-    }
-    node.sibling.return = node.return
-    node = node.sibling
+		if (node === wip) {
+			return
+		}
+		while (node.sibling === null) {
+			if (node.return === null || node.return === wip) {
+				return
+			}
+			node = node?.return
+		}
+		node.sibling.return = node.return
+		node = node.sibling
 	}
 }
 // 当前节点的子节点以及子节点的兄弟节点中的flags冒泡到当前节点的subtreeFlags上
-function bubbleProperties(wip:FiberNode){
-  let subtreeFlags = NoFlags
-  let child = wip.child
-  while(child !== null){
-    subtreeFlags |= child.subtreeFlags
-    subtreeFlags |= child.flags
+function bubbleProperties(wip: FiberNode) {
+	let subtreeFlags = NoFlags
+	let child = wip.child
+	while (child !== null) {
+		subtreeFlags |= child.subtreeFlags
+		subtreeFlags |= child.flags
 
-    child.return = wip
-    child = child.sibling
-  }
-  wip.subtreeFlags |= subtreeFlags
+		child.return = wip
+		child = child.sibling
+	}
+	wip.subtreeFlags |= subtreeFlags
 }
