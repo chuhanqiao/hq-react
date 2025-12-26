@@ -37,7 +37,7 @@ function renderRoot(root: FiberRootNode) {
 			workLoop()
 			break
 		} catch (e) {
-			if(__DEV__){
+			if (__DEV__) {
 				console.log('workLoop发生错误', e)
 			}
 			workInProgress = null
@@ -49,28 +49,28 @@ function renderRoot(root: FiberRootNode) {
 	commitRoot(root)
 }
 
-function commitRoot(root:FiberRootNode){
+function commitRoot(root: FiberRootNode) {
 	const finishedWork = root.finishedWork
-	if(finishedWork === null){
-		return 
+	if (finishedWork === null) {
+		return
 	}
-	if(__DEV__){
-		console.warn('commit阶段开始',finishedWork)
+	if (__DEV__) {
+		console.warn('commit阶段开始', finishedWork)
 	}
-// 重置finishedWork
-root.finishedWork = null
-// 判断是否存在三个子阶段存在的操作
-const subtreeHasEffect = (finishedWork.subtreeFlags & MutationMask) !== NoFlags
-const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags
-if(subtreeHasEffect || rootHasEffect){
-// beforeMutation
-// mutation
-commitMutationEffect(finishedWork)
-root.current = finishedWork
-// layout
-}else{
-	root.current = finishedWork
-}
+	// 重置finishedWork
+	root.finishedWork = null
+	// 判断是否存在三个子阶段存在的操作
+	const subtreeHasEffect = (finishedWork.subtreeFlags & MutationMask) !== NoFlags
+	const rootHasEffect = (finishedWork.flags & MutationMask) !== NoFlags
+	if (subtreeHasEffect || rootHasEffect) {
+		// beforeMutation
+		// mutation
+		commitMutationEffect(finishedWork)
+		root.current = finishedWork
+		// layout
+	} else {
+		root.current = finishedWork
+	}
 
 }
 

@@ -6,10 +6,12 @@ import { Container } from './hostConfig'
 import { ReactElementType } from 'shared/ReactTypes'
 
 export function createRoot(container: Container) {
+	console.log(container, '----container')
 	const root = createContainer(container)
 	return {
 		render(element: ReactElementType) {
-			updateContainer(element, root)
+			console.log(element, '---element')
+			return updateContainer(element, root)
 		}
 	}
 }

@@ -1,4 +1,4 @@
-import { Dispatcher,Dispatch } from 'react/src/currentDispatcher'
+import { Dispatcher, Dispatch } from 'react/src/currentDispatcher'
 import internals from 'shared/internals'
 import { FiberNode } from './fiber'
 import {
@@ -11,7 +11,7 @@ import { Action } from 'shared/ReactTypes'
 import { scheduleUploadOnFiber } from './workLoop'
 
 let currentlyRenderingFiber: FiberNode | null = null
-let workInProgressHook: Hook | null = null
+let workInProgressHook: Hook | null = null // 指向当前正在工作的hook
 const { currentDispatcher } = internals
 
 interface Hook {
@@ -48,7 +48,7 @@ function mountState<State>(
 	initialState: (() => State) | State
 ): [State, Dispatch<State>] {
 	// 找到当前useState对应的数据
-	const hook = mountWorkInProgresHook()
+	const hook = mountWorkInProgressHook()
 	let memoizedState
 	if (initialState instanceof Function) {
 		memoizedState = initialState()
@@ -57,11 +57,11 @@ function mountState<State>(
 	}
 	const queue = createUpdateQueue<State>()
 	hook.updateQueue = queue
-  hook.memoizedState = memoizedState
-  
-  // @ts-ignore
-  const dispatch = dispatchSetState.bind(null,currentlyRenderingFiber,queue)
-  queue.dispatch = dispatch
+	hook.memoizedState = memoizedState
+
+	// @ts-ignore
+	const dispatch = dispatchSetState.bind(null, currentlyRenderingFiber, queue)
+	queue.dispatch = dispatch
 	return [memoizedState, dispatch]
 }
 
@@ -75,7 +75,7 @@ function dispatchSetState<State>(
 	scheduleUploadOnFiber(fiber)
 }
 
-function mountWorkInProgresHook(): Hook {
+function mountWorkInProgressHook(): Hook {
 	const hook: Hook = {
 		memoizedState: null,
 		updateQueue: null,
@@ -93,6 +93,7 @@ function mountWorkInProgresHook(): Hook {
 	} else {
 		// mount时 后续的hook
 		workInProgressHook.next = hook
+		// workInProgressHook永远指向最后一个hook
 		workInProgressHook = hook
 	}
 	return workInProgressHook

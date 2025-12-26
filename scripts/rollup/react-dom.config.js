@@ -8,20 +8,22 @@ const pkgPath = resolvePkgPath(name)
 //  react产物路径
 const pkgDistPath = resolvePkgPath(name, true)
 export default [
+	// react-dom
 	{
 		input: `${pkgPath}/${module}`,
 		output: [
 			{
 				file: `${pkgDistPath}/index.js`,
-				name: 'index.js',
+				name: 'ReactDom',
 				format: 'umd'
 			},
 			{
 				file: `${pkgDistPath}/client.js`,
-				name: 'client.js',
+				name: 'client',
 				format: 'umd'
 			}
 		],
+		// 外部包，不打包进react-dom的依赖
 		external: [...Object.keys(peerDependencies)],
 		plugins: [
 			...getBaseRollupPlugins(),
@@ -45,5 +47,18 @@ export default [
 				})
 			})
 		]
+	},
+	// test-utils
+	{
+		input: `${pkgPath}/test-utils.ts`,
+		output: [
+			{
+				file: `${pkgDistPath}/test-utils.ts`,
+				name: 'testUtils',
+				format: 'umd'
+			}
+		],
+		external: ['react-dom', 'react'],
+		plugins: getBaseRollupPlugins()
 	}
 ]

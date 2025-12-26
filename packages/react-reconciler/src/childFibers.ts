@@ -2,14 +2,49 @@ import { REACT_ELEMENT_TYPE } from 'shared/ReactSymbols'
 import { FiberNode } from './fiber'
 import { ReactElementType } from 'shared/ReactTypes'
 import { FunctionComponent, HostComponent, HostText, WorkTag } from './worTags'
-import { Placement } from './fiberFlags'
+import { ChildDeletion, Placement } from './fiberFlags'
 
 function ChildReconciler(shouldTrackEffects: boolean) {
+	function deleteChild(returnFiber: FiberNode, childToDelete: FiberNode) {
+		if (!shouldTrackEffects) {
+			return
+		}
+		const deletions = returnFiber.deletions
+		if (deletions === null) {
+			returnFiber.deletions = [childToDelete]
+			returnFiber.flags |= ChildDeletion
+		} else {
+			deletions.push(childToDelete)
+		}
+	}
 	function reconcileSingleElement(
 		returnFiber: FiberNode,
 		currentFiber: FiberNode | null,
 		element: ReactElementType
-	) {
+	): FiberNode {
+		const key = element.key
+		if (currentFiber !== null) {
+			// update
+			if (currentFiber.key === key) {
+				// key相同
+				if (element.$$typeof === REACT_ELEMENT_TYPE) {
+					if (currentFiber.type === element.type) {
+						// type相同 可以复用
+						return currentFiber
+					}
+					deleteChild(returnFiber, currentFiber)
+					// 继续执行，创建新的fiber
+				} else {
+					if (__DEV__) {
+						console.log('')
+					}
+					// 继续执行，创建新的fiber
+				}
+			} else {
+				// 删除旧的
+				deleteChild(returnFiber, currentFiber)
+			}
+		}
 		// 根据reactElement创建一个fiber并返回
 		const fiber = createFiberFromElement(element)
 		fiber.return = returnFiber
@@ -41,7 +76,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
 			switch (newChild.$$typeof) {
 				case REACT_ELEMENT_TYPE:
 					return placeSingleChild(
-						reconcileSingleElement(returnFiber, currentFiber, newChild)
+						reconcileSingleElement(returnFiber, currentFiber || null, newChild)
 					)
 				default:
 					if (__DEV__) {
@@ -60,7 +95,7 @@ function ChildReconciler(shouldTrackEffects: boolean) {
 		if (__DEV__) {
 			console.warn('未实现的reconcile类型', newChild)
 		}
-    return null
+		return null
 	}
 }
 export const reconcileChildFibers = ChildReconciler(true)

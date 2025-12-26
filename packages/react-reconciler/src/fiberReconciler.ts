@@ -8,12 +8,7 @@ import {
 	enqueueUpdate
 } from './updateQueue'
 import { ReactElementType } from 'shared/ReactTypes'
-import {scheduleUploadOnFiber} from './workLoop'
-/**
- * ReactDOM.createRoot().render(<App/>)，
- * createRoot()内部执行createContainer()，
- * render()内部执行updateContainer()
-**/
+import { scheduleUploadOnFiber } from './workLoop'
 // 创建fiberRootNode
 export function createContainer(container: Container) {
 	const hostRootFiber = new FiberNode(HostRoot, {}, null)
@@ -31,6 +26,6 @@ export function updateContainer(
 		hostRootFiber.updateQueue as UpdateQueue<ReactElementType | null>,
 		update
 	)
-  scheduleUploadOnFiber(hostRootFiber)
+	scheduleUploadOnFiber(hostRootFiber)
 	return element
 }

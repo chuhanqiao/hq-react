@@ -1,5 +1,6 @@
 import { Action } from 'shared/ReactTypes'
 import { Update } from './fiberFlags'
+import { Dispatch } from 'react/src/currentDispatcher'
 export interface Update<State> {
 	action: Action<State>
 }
